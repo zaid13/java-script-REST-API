@@ -1,68 +1,39 @@
-const express = require('express');
-const app = express();
-
-
-const http = require('http');
-
-const hostname = '127.0.0.1';
-const port = process.env.PORT || 3000;
-
-
-
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-  })
-
-  
-app.listen(port, () => console.log(`Server is listening on port ${port}...`));
-
-// server.listen(port, hostname, () => {
-//   console.log(`Server running at http://${hostname}:${port}/`);
-// });
-
 // const express = require('express');
 // const app = express();
 
 
-// const Joi = require('joi')
-// app.get('/',(req,res)=>{
-//     res.send("hel  o")
-// })
+// const http = require('http');
+
+// const hostname = '127.0.0.1';
+// const port = process.env.PORT || 3000;
 
 
 
-// // let mysql = require('mysql');
-// // let connection = mysql.createConnection({
-// //     host: 'localhost',
-// //     user: 'root',
-// //     password: '',
-// //     database: 'sampleDB',});
+// app.get('/', (req, res) => {
+//     res.send('Hello World!')
+//   })
 
-// // connection.connect(function(err) {
-// //   if (!!err) {
-// //     return console.error('error: ' + err.message);
-// //   }
-// //   else{
+  
+// app.listen(port, () => console.log(`Server is listening on port ${port}...`));
+var WebSocket = require('ws');
 
-// //   console.log('Connected to the MySQL server.');
+var port = process.env.PORT || 3000;
 
-// //   }
-// // });
+var server = new WebSocket.Server(
+  {
+    port: port,
+  }
+)
 
+let msg = "Server: Welcome!";
 
-// // app.get('/',function(req,res){
-
-// //   connection.query('SELECT * FROM sampleDB',function(  qerror,rows,fields  ){
-// //       if(error){
-// //         console.log('error');
-
-// //       }
-// //       else{
-// //         console.log('success');
-
-// //       }
-
-
-// //   });
-// // })
-// app.listen(1337);
+server.on('connection', function connection(client) {
+  client.send(msg);
+  client.on('message', function incoming(message) {
+    msg = message;
+    for(var cl of server.clients) {
+      cl.send(message);
+    }
+    console.log("Received the following message:\n" + message);
+  });
+});
